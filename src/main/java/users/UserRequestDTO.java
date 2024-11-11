@@ -1,5 +1,7 @@
 package users;
 
+import common.OnCreate;
+import common.OnUpdate;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import lombok.Builder;
@@ -12,16 +14,18 @@ import lombok.Setter;
 @RequiredArgsConstructor
 @Builder
 public class UserRequestDTO {
-    @NotBlank(message = "Username is required")
+    @NotBlank(groups = {OnUpdate.class})
+    private Long id;
+    @NotBlank(groups = {OnUpdate.class, OnCreate.class}, message = "Username is required")
     private String username;
 
-    @Email(message = "Invalid email format")
+    @Email(groups = {OnCreate.class},message = "Invalid email format")
     private String email;
 
-    @NotBlank(message = "Password is required")
+    @NotBlank(groups = { OnCreate.class},message = "Password is required")
     private String password;
 
-    @NotBlank(message = "Full name is required")
+    @NotBlank(groups = {OnCreate.class},message = "Full name is required")
     private String fullName;
 
 }

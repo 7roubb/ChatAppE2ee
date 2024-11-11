@@ -23,8 +23,7 @@ import java.time.LocalDateTime;
 @Slf4j
 @SuperBuilder(toBuilder = true)
 public class BaseEntity {
-    @MongoId
-    private String id;
+
 
     @CreatedDate
     @Column(name = "created_at", updatable = false)
