@@ -1,0 +1,6 @@
+spring:
+  application:
+      name: e2eeChatApp
+  data:
+    mongodb: //osama:osama812023@localhost:27017/testdb
+
