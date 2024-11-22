@@ -1,12 +1,13 @@
 package com.cotede.e2eechatapp.users;
 
+import com.cotede.e2eechatapp.common.OnCreate;
 import com.cotede.e2eechatapp.common.OnUpdate;
 import com.cotede.e2eechatapp.response.ApiResponse;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -18,8 +19,8 @@ public class UserController {
     private final UserServiceImpl userService;
     private final MessageSource messageSource;
 
-    @PostMapping("/create")
-    public ApiResponse<UserResponseDTO> createUser(@RequestBody UserRequestDTO userRequestDTO) {
+    @PostMapping
+    public ApiResponse<UserResponseDTO> createUser( @Validated(OnCreate.class) @RequestBody @Valid  UserRequestDTO userRequestDTO) {
         UserResponseDTO createdUser = userService.createUser(userRequestDTO);
         String message = messageSource.getMessage("user.create.success",new Object[]{userRequestDTO.getUserName()}, LocaleContextHolder.getLocale());
         return ApiResponse.success(createdUser,HttpStatus.OK,message) ;
@@ -33,14 +34,28 @@ public class UserController {
     }
 
     @PutMapping
-    public ResponseEntity<UserResponseDTO> updateUser(@Validated(OnUpdate.class) @RequestBody UserRequestDTO userRequestDTO) {
+    public ApiResponse<UserResponseDTO> updateUser(@Validated(OnUpdate.class) @RequestBody @Valid UserRequestDTO userRequestDTO) {
         UserResponseDTO updatedUser = userService.updateUser(userRequestDTO);
-        return ResponseEntity.ok(updatedUser);
-    }
+        String message = messageSource.getMessage("user.update.success",new Object[]{userRequestDTO.getUserName()}, LocaleContextHolder.getLocale());
+        return ApiResponse.success(updatedUser,HttpStatus.OK,message) ;    }
 
     @DeleteMapping
-    public ResponseEntity<Void> deleteUser(@RequestHeader String username) {
-        Boolean isDeleted = userService.deleteUser(username);
-        return isDeleted ? ResponseEntity.noContent().build() : ResponseEntity.notFound().build();
+    public ApiResponse<Boolean> deleteUser(@RequestHeader String userName) {
+        Boolean isDeleted = userService.deleteUser(userName);
+        String message = messageSource.getMessage("user.delete.success",new Object[]{userName}, LocaleContextHolder.getLocale());
+        return ApiResponse.success(isDeleted,HttpStatus.OK,message) ;    }
+
+    @PostMapping("/friend")
+    public ApiResponse<Void> addFriend(@RequestHeader String userId, @RequestHeader String friendId) {
+        userService.addFriend(userId, friendId);
+        String message = messageSource.getMessage("friend.add.success",new Object[]{friendId}, LocaleContextHolder.getLocale());
+        return ApiResponse.success(null,HttpStatus.OK,message) ;
+    }
+
+    @DeleteMapping("/friend")
+    public ApiResponse<Void> removeFriend(@RequestHeader String userId, @RequestHeader String friendId) {
+        userService.removeFriend(userId, friendId);
+        String message = messageSource.getMessage("friend.remove.success",new Object[]{friendId}, LocaleContextHolder.getLocale());
+        return ApiResponse.success(null,HttpStatus.OK,message) ;
     }
 }

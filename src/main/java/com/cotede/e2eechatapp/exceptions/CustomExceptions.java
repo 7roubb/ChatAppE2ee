@@ -16,4 +16,16 @@ public class CustomExceptions {
             super(UserName);
         }
     }
+
+    public static class FriendAlreadyExistsException extends RuntimeException {
+        public FriendAlreadyExistsException(String UserName) {
+            super(UserName);
+        }
+    }
+
+    public static class FriendNotFoundException extends RuntimeException {
+        public FriendNotFoundException(String UserName) {
+            super(UserName);
+        }
+    }
 }

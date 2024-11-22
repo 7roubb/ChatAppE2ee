@@ -23,7 +23,6 @@ public class User extends BaseEntity {
     @GeneratedValue
     private Long uuid ;
 
-
     private String userName;
 
     private String email;

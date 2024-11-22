@@ -8,4 +8,6 @@ public interface UserService {
     UserResponseDTO createUser(UserRequestDTO userRequestDTO);
     UserResponseDTO updateUser(UserRequestDTO userRequestDTO);
     Boolean deleteUser(String username);
+    void addFriend(String userName, String friendUserName);
+    void removeFriend(String userId, String friendUserName);
 }

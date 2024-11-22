@@ -3,6 +3,7 @@ package com.cotede.e2eechatapp.users;
 import com.cotede.e2eechatapp.exceptions.CustomExceptions;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import java.util.Optional;
 
 @Service
@@ -36,16 +37,18 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserResponseDTO updateUser(UserRequestDTO userRequestDTO) {
-        return userRepository.findById(userRequestDTO.getUuid())
-                .map(existingUser -> {
-                    Optional.ofNullable(userRequestDTO.getUserName()).ifPresent(existingUser::setUserName);
-                    Optional.ofNullable(userRequestDTO.getPassword()).ifPresent(existingUser::setPassword);
-                    Optional.ofNullable(userRequestDTO.getEmail()).ifPresent(existingUser::setEmail);
-                    userRepository.save(existingUser);
-
-                    return UserMapper.toUserResponse(existingUser);
-                })
-                .orElseThrow(() -> new CustomExceptions.UserNotFound("User not found with ID: " + userRequestDTO.getUuid()));
+        Optional<User> existingUserOptional = Optional.ofNullable(userRepository.findByUserName(userRequestDTO.getUserName()));
+        User existingUser = existingUserOptional.orElseThrow(() ->
+                new CustomExceptions.UserNotFound(userRequestDTO.getUserName())
+        );
+        Optional.ofNullable(userRequestDTO.getNewUserName())
+                .ifPresent(existingUser::setUserName);
+        Optional.ofNullable(userRequestDTO.getPassword())
+                .ifPresent(existingUser::setPassword);
+        Optional.ofNullable(userRequestDTO.getEmail())
+                .ifPresent(existingUser::setEmail);
+        userRepository.save(existingUser);
+        return UserMapper.toUserResponse(existingUser);
     }
     public boolean deleteUserByUserName(String userName) {
         long deletedCount = userRepository.deleteByUserName(userName);
@@ -55,5 +58,34 @@ public class UserServiceImpl implements UserService {
     @Override
     public Boolean deleteUser(String username){
         return deleteUserByUserName(username);
+    }
+
+    @Override
+    @Transactional
+    public void addFriend(String userName, String friendUserName) {
+        User user = Optional.ofNullable(userRepository.findByUserName(userName))
+                .orElseThrow(() -> new CustomExceptions.UserNotFound(userName));
+
+        User friend = Optional.ofNullable(userRepository.findByUserName(friendUserName))
+                .orElseThrow(() -> new CustomExceptions.UserNotFound(friendUserName));
+        if (user.getFriends().contains(friend)) {
+            throw new CustomExceptions.FriendAlreadyExistsException(friendUserName);
+        }
+        user.addFriend(friend);
+        userRepository.save(user);
+    }
+
+    @Override
+    @Transactional
+    public void removeFriend(String userName, String friendUserName) {
+        User user = Optional.ofNullable(userRepository.findByUserName(userName))
+                .orElseThrow(() -> new CustomExceptions.UserNotFound(userName));
+        User friend = Optional.ofNullable(userRepository.findByUserName(friendUserName))
+                .orElseThrow(() -> new CustomExceptions.UserNotFound(friendUserName));
+        if (!user.getFriends().contains(friend)) {
+            throw new CustomExceptions.FriendNotFoundException(friendUserName);
+        }
+        user.removeFriend(friend);
+        userRepository.save(user);
     }
 }
