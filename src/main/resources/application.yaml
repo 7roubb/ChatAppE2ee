@@ -1,6 +1,20 @@
+server:
+  port: 8080
 spring:
   application:
       name: e2eeChatApp
   data:
-    mongodb: //osama:osama812023@localhost:27017/testdb
+    mongodb:
+      uri: mongodb://admin:admin123@localhost:27017/mydatabase?authSource=admin
+      security:
+        authorization: enabled
 
+  logging:
+    level:
+      org.springframework: DEBUG
+      com.mongodb: DEBUG
+
+  messages:
+    basename: i18n/messages
+    encoding: UTF-8
+    fallback-to-system-locale: false

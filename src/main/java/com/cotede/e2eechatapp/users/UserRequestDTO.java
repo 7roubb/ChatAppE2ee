@@ -1,10 +1,9 @@
-package users;
+package com.cotede.e2eechatapp.users;
 
-import common.OnCreate;
-import common.OnUpdate;
+import com.cotede.e2eechatapp.common.OnCreate;
+import com.cotede.e2eechatapp.common.OnUpdate;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
@@ -12,12 +11,12 @@ import lombok.Setter;
 @Getter
 @Setter
 @RequiredArgsConstructor
-@Builder
 public class UserRequestDTO {
-    @NotBlank(groups = {OnUpdate.class})
-    private Long id;
+
+    private String id;
+
     @NotBlank(groups = {OnUpdate.class, OnCreate.class}, message = "Username is required")
-    private String username;
+    private String userName;
 
     @Email(groups = {OnCreate.class},message = "Invalid email format")
     private String email;

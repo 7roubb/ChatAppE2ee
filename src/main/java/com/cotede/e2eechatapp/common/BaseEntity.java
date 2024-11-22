@@ -1,4 +1,4 @@
-package common;
+package com.cotede.e2eechatapp.common;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.MappedSuperclass;

@@ -1,11 +1,8 @@
-package users;
+package com.cotede.e2eechatapp.users;
 
-import exceptions.CustomExceptions;
-import jakarta.transaction.Transactional;
+import com.cotede.e2eechatapp.exceptions.CustomExceptions;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-
-import java.time.LocalDateTime;
 import java.util.Optional;
 
 @Service
@@ -14,7 +11,7 @@ public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
 
     @Override
-    @Transactional
+
     public UserResponseDTO createUser(UserRequestDTO userRequestDTO){
         User user = UserMapper.toUser(userRequestDTO);
         userRepository.save(user);
@@ -24,19 +21,19 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserResponseDTO getUser(String username){
-        User user = userRepository.findByUsername(username);
-        return UserMapper.toUserResponse(user);
+        Optional<User> user = Optional.ofNullable(userRepository.findByUserName(username));
+        return user.map(UserMapper::toUserResponse)
+                .orElseThrow(()
+                        -> new CustomExceptions.UserNotFound(username));
     }
 
     @Override
-    @Transactional
     public UserResponseDTO updateUser(UserRequestDTO userRequestDTO) {
         return userRepository.findById(userRequestDTO.getId())
                 .map(existingUser -> {
-                    Optional.ofNullable(userRequestDTO.getUsername()).ifPresent(existingUser::setUsername);
+                    Optional.ofNullable(userRequestDTO.getUserName()).ifPresent(existingUser::setUserName);
                     Optional.ofNullable(userRequestDTO.getPassword()).ifPresent(existingUser::setPassword);
                     Optional.ofNullable(userRequestDTO.getEmail()).ifPresent(existingUser::setEmail);
-                    existingUser.setUpdatedAt(LocalDateTime.now());
                     userRepository.save(existingUser);
 
                     return UserMapper.toUserResponse(existingUser);
@@ -46,6 +43,6 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public Boolean deleteUser(String username){
-        return userRepository.deleteByUsername(username);
+        return userRepository.deleteByUserName(username);
     }
 }

@@ -1,4 +1,4 @@
-package users;
+package com.cotede.e2eechatapp.users;
 
 import org.springframework.stereotype.Service;
 

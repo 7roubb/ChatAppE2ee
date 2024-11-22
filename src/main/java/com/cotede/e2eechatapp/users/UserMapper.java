@@ -1,7 +1,5 @@
-package users;
-
+package com.cotede.e2eechatapp.users;
 import org.springframework.stereotype.Component;
-
 import java.util.Optional;
 
 @Component
@@ -11,7 +9,7 @@ public class UserMapper {
        return  Optional.ofNullable(userRequest).map(
                 req ->{
                     User user = new User();
-                    user.setUsername(userRequest.getUsername());
+                    user.setUserName(userRequest.getUserName());
                     user.setEmail(userRequest.getEmail());
                     user.setPassword(userRequest.getPassword());
                     user.setFullName(userRequest.getFullName());
@@ -24,8 +22,8 @@ public class UserMapper {
     public static UserResponseDTO toUserResponse(User user) {
         return Optional.ofNullable(user).map(u ->{
             UserResponseDTO userResponse = new UserResponseDTO();
-            userResponse.setId(user.getId());
-            userResponse.setUsername(user.getUsername());
+            userResponse.setId(u.getId());
+            userResponse.setUsername(user.getUserName());
             userResponse.setEmail(user.getEmail());
             userResponse.setFullName(user.getFullName());
             return userResponse;
