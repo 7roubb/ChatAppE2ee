@@ -9,6 +9,12 @@ spring:
       security:
         authorization: enabled
 
+  neo4j:
+    uri: bolt://localhost:7687
+    authentication:
+      username: neo4j
+      password: password123
+
   logging:
     level:
       org.springframework: DEBUG

@@ -1,10 +1,13 @@
 package com.cotede.e2eechatapp.users;
+import org.springframework.data.neo4j.repository.Neo4jRepository;
+import org.springframework.stereotype.Repository;
 
-import org.springframework.data.mongodb.repository.MongoRepository;
-import org.springframework.data.mongodb.repository.config.EnableMongoRepositories;
+import java.util.Optional;
 
-@EnableMongoRepositories
-public interface UserRepository extends MongoRepository<User, String> {
- User findByUserName(String username);
- Boolean deleteByUserName(String username);
+@Repository
+public interface UserRepository extends Neo4jRepository<User,Long> {
+ User findByUserName(String userName);
+ long deleteByUserName(String userName);
+
+ Optional<Object> findByEmail(String email);
 }

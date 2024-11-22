@@ -11,8 +11,15 @@ public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
 
     @Override
-
     public UserResponseDTO createUser(UserRequestDTO userRequestDTO){
+        User existingUserByUsername = userRepository.findByUserName(userRequestDTO.getUserName());
+        if (existingUserByUsername != null) {
+            throw new CustomExceptions.UserAlreadyExistsException(userRequestDTO.getUserName());
+        }
+        userRepository.findByEmail(userRequestDTO.getEmail())
+                .ifPresent(user -> {
+                    throw new CustomExceptions.EmailAlreadyExistsException(userRequestDTO.getEmail());
+                });
         User user = UserMapper.toUser(userRequestDTO);
         userRepository.save(user);
         return UserMapper.toUserResponse(user);
@@ -29,7 +36,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserResponseDTO updateUser(UserRequestDTO userRequestDTO) {
-        return userRepository.findById(userRequestDTO.getId())
+        return userRepository.findById(userRequestDTO.getUuid())
                 .map(existingUser -> {
                     Optional.ofNullable(userRequestDTO.getUserName()).ifPresent(existingUser::setUserName);
                     Optional.ofNullable(userRequestDTO.getPassword()).ifPresent(existingUser::setPassword);
@@ -38,11 +45,15 @@ public class UserServiceImpl implements UserService {
 
                     return UserMapper.toUserResponse(existingUser);
                 })
-                .orElseThrow(() -> new CustomExceptions.UserNotFound("User not found with ID: " + userRequestDTO.getId()));
+                .orElseThrow(() -> new CustomExceptions.UserNotFound("User not found with ID: " + userRequestDTO.getUuid()));
+    }
+    public boolean deleteUserByUserName(String userName) {
+        long deletedCount = userRepository.deleteByUserName(userName);
+        return deletedCount > 0;
     }
 
     @Override
     public Boolean deleteUser(String username){
-        return userRepository.deleteByUserName(username);
+        return deleteUserByUserName(username);
     }
 }

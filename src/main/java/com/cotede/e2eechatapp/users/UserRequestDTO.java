@@ -13,7 +13,7 @@ import lombok.Setter;
 @RequiredArgsConstructor
 public class UserRequestDTO {
 
-    private String id;
+    private Long uuid;
 
     @NotBlank(groups = {OnUpdate.class, OnCreate.class}, message = "Username is required")
     private String userName;

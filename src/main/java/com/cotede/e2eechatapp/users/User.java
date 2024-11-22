@@ -1,40 +1,62 @@
 package com.cotede.e2eechatapp.users;
 
-import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Size;
+import com.cotede.e2eechatapp.common.BaseEntity;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 import org.springframework.data.annotation.Id;
-import org.springframework.data.mongodb.core.mapping.Document;
-import org.springframework.validation.annotation.Validated;
-
-import java.io.Serializable;
-
+import org.springframework.data.neo4j.core.schema.GeneratedValue;
+import org.springframework.data.neo4j.core.schema.Node;
+import org.springframework.data.neo4j.core.schema.Relationship;
+import java.util.HashSet;
+import java.util.Objects;
+import java.util.Set;
 
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@Validated
 @SuperBuilder(toBuilder = true)
-@Document(collection = "users")
-public class User implements Serializable {
-    @Id
-    private String id;
+@Node("User")
+public class User extends BaseEntity {
 
-    @NotBlank(message = "Username is required")
-    @Size(min = 3, max = 50, message = "Username must be between 3 and 50 characters")
+    @Id
+    @GeneratedValue
+    private Long uuid ;
+
+
     private String userName;
 
-    @NotBlank(message = "Email is required")
-    @Email(message = "Email should be valid")
     private String email;
 
-    @NotBlank(message = "Password is required")
     private String password;
 
-    @NotBlank(message = "Full name is required")
-    @Size(min = 3, max = 100, message = "Full name must be between 3 and 100 characters")
     private String fullName;
+
+    @Builder.Default
+    @Relationship(type = "FRIEND", direction = Relationship.Direction.OUTGOING)
+    private Set<User> friends = new HashSet<>();
+
+    public void addFriend(User friend) {
+        if (friend != null) {
+            this.friends.add(friend);
+        }
+    }
+
+    public void removeFriend(User friend) {
+        this.friends.remove(friend);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof User)) return false;
+        User user = (User) o;
+        return Objects.equals(uuid, user.uuid);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(uuid);
+    }
+
 }

@@ -22,7 +22,7 @@ public class UserMapper {
     public static UserResponseDTO toUserResponse(User user) {
         return Optional.ofNullable(user).map(u ->{
             UserResponseDTO userResponse = new UserResponseDTO();
-            userResponse.setId(u.getId());
+            userResponse.setUuid(u.getUuid());
             userResponse.setUsername(user.getUserName());
             userResponse.setEmail(user.getEmail());
             userResponse.setFullName(user.getFullName());

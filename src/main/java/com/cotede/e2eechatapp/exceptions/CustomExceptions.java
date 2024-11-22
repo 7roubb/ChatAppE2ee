@@ -6,4 +6,14 @@ public class CustomExceptions {
             super(UserName);
         }
     }
+    public static class UserAlreadyExistsException extends RuntimeException {
+        public UserAlreadyExistsException(String UserName) {
+            super(UserName);
+        }
+    }
+    public static class EmailAlreadyExistsException extends RuntimeException {
+        public EmailAlreadyExistsException(String UserName) {
+            super(UserName);
+        }
+    }
 }
