@@ -71,7 +71,7 @@ public class UserServiceImpl implements UserService {
         if (user.getFriends().contains(friend)) {
             throw new CustomExceptions.FriendAlreadyExistsException(friendUserName);
         }
-        user.addFriend(friend);
+        user.sendFriendshipRequest(friend);
         userRepository.save(user);
     }
 
@@ -87,5 +87,21 @@ public class UserServiceImpl implements UserService {
         }
         user.removeFriend(friend);
         userRepository.save(user);
+    }
+
+    @Override
+    public void acceptFriend(String userId, String friendUserName) {
+        User user = Optional.ofNullable(userRepository.findByUserName(userId))
+                .orElseThrow(() -> new CustomExceptions.UserNotFound(userId));
+        User friend = Optional.ofNullable(userRepository.findByUserName(friendUserName))
+                .orElseThrow(() -> new CustomExceptions.UserNotFound(friendUserName));
+        FriendShipRequest request = user.getIncomingRequests().stream()
+                .filter(r -> r.getSender().equals(friend) && !r.isAccepted())
+                .findFirst()
+                .orElse(null);
+
+        user.acceptFriendshipRequest(request);
+        userRepository.save(user);
+
     }
 }

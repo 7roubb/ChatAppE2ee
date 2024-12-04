@@ -15,10 +15,6 @@ spring:
       username: neo4j
       password: password123
 
-  logging:
-    level:
-      org.springframework: DEBUG
-      com.mongodb: DEBUG
 
   messages:
     basename: i18n/messages

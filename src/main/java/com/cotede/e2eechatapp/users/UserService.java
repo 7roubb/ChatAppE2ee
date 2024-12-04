@@ -10,4 +10,5 @@ public interface UserService {
     Boolean deleteUser(String username);
     void addFriend(String userName, String friendUserName);
     void removeFriend(String userId, String friendUserName);
+    void acceptFriend(String userId, String friendUserName);
 }

@@ -7,6 +7,8 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.neo4j.core.schema.GeneratedValue;
 import org.springframework.data.neo4j.core.schema.Node;
 import org.springframework.data.neo4j.core.schema.Relationship;
+
+import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
@@ -21,7 +23,7 @@ public class User extends BaseEntity {
 
     @Id
     @GeneratedValue
-    private Long uuid ;
+    private Long uuid;
 
     private String userName;
 
@@ -35,14 +37,38 @@ public class User extends BaseEntity {
     @Relationship(type = "FRIEND", direction = Relationship.Direction.OUTGOING)
     private Set<User> friends = new HashSet<>();
 
-    public void addFriend(User friend) {
-        if (friend != null) {
-            this.friends.add(friend);
+    @Builder.Default
+    @Relationship(type = "PENDING_FRIENDSHIP", direction = Relationship.Direction.OUTGOING)
+    private Set<FriendShipRequest> outgoingRequests = new HashSet<>();
+
+    @Builder.Default
+    @Relationship(type = "PENDING_FRIENDSHIP", direction = Relationship.Direction.INCOMING)
+    private Set<FriendShipRequest> incomingRequests = new HashSet<>();
+
+    public void sendFriendshipRequest(User receiver) {
+        FriendShipRequest request = FriendShipRequest.builder()
+                .sender(this)
+                .receiver(receiver)
+                .sendAt(LocalDateTime.now())
+                .build();
+        this.outgoingRequests.add(request);
+        receiver.getIncomingRequests().add(request);
+    }
+
+    public void acceptFriendshipRequest(FriendShipRequest request) {
+        if (request.getReceiver().equals(this) && !request.isAccepted()) {
+            request.accept();
+            this.friends.add(request.getSender());
+            request.getSender().getFriends().add(this);
         }
     }
 
-    public void removeFriend(User friend) {
-        this.friends.remove(friend);
+    public void rejectFriendshipRequest(FriendShipRequest request) {
+        if (request.getReceiver().equals(this) && !request.isAccepted()) {
+            request.reject();
+            this.outgoingRequests.remove(request);
+            request.getSender().getIncomingRequests().remove(request);
+        }
     }
 
     @Override
@@ -56,6 +82,9 @@ public class User extends BaseEntity {
     @Override
     public int hashCode() {
         return Objects.hash(uuid);
+    }
+    public void removeFriend(User friend){
+        this.friends.remove(friend);
     }
 
 }
