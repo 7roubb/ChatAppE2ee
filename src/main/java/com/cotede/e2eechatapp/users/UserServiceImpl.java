@@ -13,7 +13,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserResponseDTO createUser(UserRequestDTO userRequestDTO){
-        User existingUserByUsername = userRepository.findByUserName(userRequestDTO.getUserName());
+        User existingUserByUsername = userRepository.findByUsername(userRequestDTO.getUserName());
         if (existingUserByUsername != null) {
             throw new CustomExceptions.UserAlreadyExistsException(userRequestDTO.getUserName());
         }
@@ -29,7 +29,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserResponseDTO getUser(String username){
-        Optional<User> user = Optional.ofNullable(userRepository.findByUserName(username));
+        Optional<User> user = Optional.ofNullable(userRepository.findByUsername(username));
         return user.map(UserMapper::toUserResponse)
                 .orElseThrow(()
                         -> new CustomExceptions.UserNotFound(username));
@@ -37,12 +37,12 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserResponseDTO updateUser(UserRequestDTO userRequestDTO) {
-        Optional<User> existingUserOptional = Optional.ofNullable(userRepository.findByUserName(userRequestDTO.getUserName()));
+        Optional<User> existingUserOptional = Optional.ofNullable(userRepository.findByUsername(userRequestDTO.getUserName()));
         User existingUser = existingUserOptional.orElseThrow(() ->
                 new CustomExceptions.UserNotFound(userRequestDTO.getUserName())
         );
         Optional.ofNullable(userRequestDTO.getNewUserName())
-                .ifPresent(existingUser::setUserName);
+                .ifPresent(existingUser::setUsername);
         Optional.ofNullable(userRequestDTO.getPassword())
                 .ifPresent(existingUser::setPassword);
         Optional.ofNullable(userRequestDTO.getEmail())
@@ -51,7 +51,7 @@ public class UserServiceImpl implements UserService {
         return UserMapper.toUserResponse(existingUser);
     }
     public boolean deleteUserByUserName(String userName) {
-        long deletedCount = userRepository.deleteByUserName(userName);
+        long deletedCount = userRepository.deleteByUsername(userName);
         return deletedCount > 0;
     }
 
@@ -63,10 +63,10 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional
     public void addFriend(String userName, String friendUserName) {
-        User user = Optional.ofNullable(userRepository.findByUserName(userName))
+        User user = Optional.ofNullable(userRepository.findByUsername(userName))
                 .orElseThrow(() -> new CustomExceptions.UserNotFound(userName));
 
-        User friend = Optional.ofNullable(userRepository.findByUserName(friendUserName))
+        User friend = Optional.ofNullable(userRepository.findByUsername(friendUserName))
                 .orElseThrow(() -> new CustomExceptions.UserNotFound(friendUserName));
         if (user.getFriends().contains(friend)) {
             throw new CustomExceptions.FriendAlreadyExistsException(friendUserName);
@@ -78,9 +78,9 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional
     public void removeFriend(String userName, String friendUserName) {
-        User user = Optional.ofNullable(userRepository.findByUserName(userName))
+        User user = Optional.ofNullable(userRepository.findByUsername(userName))
                 .orElseThrow(() -> new CustomExceptions.UserNotFound(userName));
-        User friend = Optional.ofNullable(userRepository.findByUserName(friendUserName))
+        User friend = Optional.ofNullable(userRepository.findByUsername(friendUserName))
                 .orElseThrow(() -> new CustomExceptions.UserNotFound(friendUserName));
         if (!user.getFriends().contains(friend)) {
             throw new CustomExceptions.FriendNotFoundException(friendUserName);
@@ -91,14 +91,14 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void acceptFriend(String userId, String friendUserName) {
-        User user = Optional.ofNullable(userRepository.findByUserName(userId))
+        User user = Optional.ofNullable(userRepository.findByUsername(userId))
                 .orElseThrow(() -> new CustomExceptions.UserNotFound(userId));
-        User friend = Optional.ofNullable(userRepository.findByUserName(friendUserName))
+        User friend = Optional.ofNullable(userRepository.findByUsername(friendUserName))
                 .orElseThrow(() -> new CustomExceptions.UserNotFound(friendUserName));
         FriendShipRequest request = user.getIncomingRequests().stream()
                 .filter(r -> r.getSender().equals(friend) && !r.isAccepted())
                 .findFirst()
-                .orElse(null);
+                .orElseThrow(() -> new CustomExceptions.RequestNotFoundException(userId));
 
         user.acceptFriendshipRequest(request);
         userRepository.save(user);

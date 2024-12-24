@@ -1,0 +1,54 @@
+version: '3.8'
+services:
+  neo4j:
+    image: neo4j:latest
+    container_name: neo4j-db
+    environment:
+      - NEO4J_AUTH=neo4j/password123
+    ports:
+      - "7687:7687"
+      - "7474:7474"
+      - "7473:7473"
+    volumes:
+      - neo4j_data:/data
+      - neo4j_logs:/logs
+      - neo4j_import:/import
+      - neo4j_plugins:/plugins
+
+  mail-dev:
+    container_name: mail-dev
+    image: maildev/maildev
+    ports:
+      - 1080:1080
+      - 1025:1025
+
+  mongodb:
+    image: mongo:latest
+    container_name: mongodb
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=admin
+      - MONGO_INITDB_ROOT_PASSWORD=admin123
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongodb_data:/data/db
+    command: ["--auth"] # Enables authentication for MongoDB
+
+  redis:
+    image: redis:latest
+    container_name: cache_db
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    command: [ "redis-server", "--save", "60", "1", "--loglevel", "warning" ]
+    environment:
+      REDIS_USERNAME: cache_db
+      REDIS_PASSWORD: password123
+volumes:
+  neo4j_data:
+  neo4j_logs:
+  neo4j_import:
+  neo4j_plugins:
+  mongodb_data:
+  redis_data:

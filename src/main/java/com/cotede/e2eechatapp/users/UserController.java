@@ -61,7 +61,7 @@ public class UserController {
     @PostMapping("/friend/accept")
     public ApiResponse<Void> acceptFriend(@RequestHeader String userId, @RequestHeader String friendId) {
         userService.acceptFriend(userId, friendId);
-        String message = messageSource.getMessage("friend.add.success",new Object[]{friendId}, LocaleContextHolder.getLocale());
+        String message = messageSource.getMessage("friend.accept.success",new Object[]{friendId}, LocaleContextHolder.getLocale());
         return ApiResponse.success(null,HttpStatus.OK,message) ;
     }
 

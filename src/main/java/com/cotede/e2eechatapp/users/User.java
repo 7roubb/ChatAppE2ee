@@ -1,17 +1,22 @@
 package com.cotede.e2eechatapp.users;
 
 import com.cotede.e2eechatapp.common.BaseEntity;
+import jakarta.persistence.Column;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.neo4j.core.schema.GeneratedValue;
 import org.springframework.data.neo4j.core.schema.Node;
 import org.springframework.data.neo4j.core.schema.Relationship;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 
+import java.security.Principal;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.HashSet;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Getter
 @Setter
@@ -19,19 +24,32 @@ import java.util.Set;
 @AllArgsConstructor
 @SuperBuilder(toBuilder = true)
 @Node("User")
-public class User extends BaseEntity {
+public class User extends BaseEntity implements UserDetails, Principal {
 
     @Id
     @GeneratedValue
     private Long uuid;
 
-    private String userName;
+    private String username;
 
+    @Column(unique = true)
     private String email;
 
     private String password;
 
-    private String fullName;
+    private String firstName;
+
+    private String lastName;
+
+    private LocalDate dateOfBirth;
+
+    private Boolean enabled;
+
+    private Boolean accountLocked;
+
+    @Builder.Default
+    @Relationship(type = "HAS_ROLE", direction = Relationship.Direction.OUTGOING)
+    private Set<Role> roles =new HashSet<Role>();
 
     @Builder.Default
     @Relationship(type = "FRIEND", direction = Relationship.Direction.OUTGOING)
@@ -83,8 +101,50 @@ public class User extends BaseEntity {
     public int hashCode() {
         return Objects.hash(uuid);
     }
+
+    @Override
+    public String getName() {
+        return firstName + " " + lastName;
+    }
+
     public void removeFriend(User friend){
         this.friends.remove(friend);
     }
 
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        return this.roles
+                .stream()
+                .map(role -> new SimpleGrantedAuthority(role.getName()))
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public String getUsername() {
+        return username;
+    }
+
+    @Override
+    public boolean isAccountNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isAccountNonLocked() {
+        return !accountLocked;
+    }
+
+    @Override
+    public boolean isCredentialsNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return enabled;
+    }
+
+    private String getFullName() {
+        return firstName + " " + lastName;
+    }
 }

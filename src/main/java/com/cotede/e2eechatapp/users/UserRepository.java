@@ -6,8 +6,8 @@ import java.util.Optional;
 
 @Repository
 public interface UserRepository extends Neo4jRepository<User,Long> {
- User findByUserName(String userName);
- long deleteByUserName(String userName);
+ User findByUsername(String username);
+ long deleteByUsername(String username);
 
  Optional<Object> findByEmail(String email);
 }

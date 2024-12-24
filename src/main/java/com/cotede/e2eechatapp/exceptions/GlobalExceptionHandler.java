@@ -68,4 +68,10 @@ public class GlobalExceptionHandler {
                 .build();
         return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
     }
+    @ExceptionHandler(CustomExceptions.RequestNotFoundException.class)
+    public ResponseEntity<ApiResponse<Void>> handleRequestNotFoundException(CustomExceptions.RequestNotFoundException ex) {
+        String message = messageSource.getMessage("request.not.found", new Object[]{ex.getMessage()}, LocaleContextHolder.getLocale());
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                .body(ApiResponse.error(message, HttpStatus.BAD_REQUEST));
+    }
 }

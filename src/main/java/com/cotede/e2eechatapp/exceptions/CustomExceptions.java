@@ -28,4 +28,9 @@ public class CustomExceptions {
             super(UserName);
         }
     }
+    public static class RequestNotFoundException extends RuntimeException {
+        public RequestNotFoundException(String UserName) {
+            super(UserName);
+        }
+    }
 }

@@ -9,7 +9,10 @@ import jakarta.validation.constraints.Pattern;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
+import org.springframework.data.neo4j.core.support.DateLong;
 import org.springframework.validation.annotation.Validated;
+
+import java.time.LocalDate;
 
 @Getter
 @Setter
@@ -41,6 +44,22 @@ public class UserRequestDTO {
     )
     private String password;
 
-    @NotBlank(groups = {OnCreate.class}, message = "{user.fullname.required}")
-    private String fullName;
+    @NotBlank(groups = {OnCreate.class}, message = "{user.fullName.required}")
+    @Pattern(regexp = "^[A-Za-z\s'-]{1,50}$",
+            message ="user.firs.name.invalid",
+            groups = {OnCreate.class}
+    )
+    private String firstName;
+
+    @Pattern(regexp = "^[A-Za-z\s'-]{1,50}$",
+             message ="user.firs.name.invalid",
+             groups = {OnCreate.class}
+    )
+    @NotBlank(groups = {OnCreate.class}, message = "{user.fullName.required}")
+    @Pattern(regexp = "^[A-Za-z\s'-]{1,50}$")
+    private String lastName;
+
+    @DateLong
+    @NotBlank(groups = {OnCreate.class}, message = "{user.dob.required}")
+    private LocalDate dateOfBirth;
 }

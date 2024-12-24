@@ -9,10 +9,14 @@ public class UserMapper {
        return  Optional.ofNullable(userRequest).map(
                 req ->{
                     User user = new User();
-                    user.setUserName(userRequest.getUserName());
+                    user.setUsername(userRequest.getUserName());
                     user.setEmail(userRequest.getEmail());
                     user.setPassword(userRequest.getPassword());
-                    user.setFullName(userRequest.getFullName());
+                    user.setFirstName(userRequest.getFirstName());
+                    user.setLastName(userRequest.getLastName());
+                    user.setDateOfBirth(userRequest.getDateOfBirth());
+                    user.setEnabled(true);
+                    user.setCreatedBy(user.getUsername());
                     return user;
                 }
         ).orElse(null);
@@ -23,9 +27,10 @@ public class UserMapper {
         return Optional.ofNullable(user).map(u ->{
             UserResponseDTO userResponse = new UserResponseDTO();
             userResponse.setUuid(u.getUuid());
-            userResponse.setUsername(user.getUserName());
+            userResponse.setUsername(user.getUsername());
             userResponse.setEmail(user.getEmail());
-            userResponse.setFullName(user.getFullName());
+            userResponse.setFirstName(user.getFirstName());
+            userResponse.setLastName(user.getLastName());
             return userResponse;
         }).orElse(null);
     }
