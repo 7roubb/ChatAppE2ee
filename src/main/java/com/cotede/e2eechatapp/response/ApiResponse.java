@@ -3,7 +3,6 @@ package com.cotede.e2eechatapp.response;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
-import org.springframework.context.MessageSource;
 import org.springframework.http.HttpStatus;
 
 @Getter

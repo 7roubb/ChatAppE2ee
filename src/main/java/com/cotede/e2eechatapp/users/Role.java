@@ -3,6 +3,7 @@ package com.cotede.e2eechatapp.users;
 import com.cotede.e2eechatapp.common.BaseEntity;
 import jakarta.persistence.Column;
 import lombok.*;
+import lombok.experimental.SuperBuilder;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.neo4j.core.schema.GeneratedValue;
 import org.springframework.data.neo4j.core.schema.Node;
@@ -15,7 +16,7 @@ import java.util.Set;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-@Builder
+@SuperBuilder(toBuilder = true)
 @Node("Role")
 
 public class Role extends BaseEntity {

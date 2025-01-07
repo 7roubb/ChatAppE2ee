@@ -13,7 +13,7 @@ import java.time.LocalDateTime;
 
 public class Token implements Serializable {
 
-    private Long id;
+    private String id;
     private String token;
     private LocalDateTime createdAt;
     private LocalDateTime expiresAt;
