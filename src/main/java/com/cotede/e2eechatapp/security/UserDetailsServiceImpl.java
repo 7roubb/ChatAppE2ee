@@ -1,5 +1,6 @@
 package com.cotede.e2eechatapp.security;
 
+import com.cotede.e2eechatapp.exceptions.CustomExceptions;
 import com.cotede.e2eechatapp.users.User;
 import com.cotede.e2eechatapp.users.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -21,7 +22,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
     @Transactional
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         User user = userRepository.findByUsername(username);
-        Optional.ofNullable(user).orElseThrow(() -> new UsernameNotFoundException("User Not Found : "+username));
+        Optional.ofNullable(user).orElseThrow(() -> new UsernameNotFoundException(username));
         return user ;
     }
 

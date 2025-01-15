@@ -33,4 +33,10 @@ public class CustomExceptions {
             super(UserName);
         }
     }
+
+    public static class WrongPasswordOrEmail extends RuntimeException {
+        public WrongPasswordOrEmail() {
+            super();
+        }
+    }
 }

@@ -1,5 +1,6 @@
 package com.cotede.e2eechatapp.exceptions;
 import com.cotede.e2eechatapp.response.ApiResponse;
+import io.jsonwebtoken.ExpiredJwtException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
@@ -73,5 +74,19 @@ public class GlobalExceptionHandler {
         String message = messageSource.getMessage("request.not.found", new Object[]{ex.getMessage()}, LocaleContextHolder.getLocale());
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                 .body(ApiResponse.error(message, HttpStatus.BAD_REQUEST));
+    }
+    @ExceptionHandler(CustomExceptions.WrongPasswordOrEmail.class)
+    public ResponseEntity<ApiResponse<Void>> handleWrongPasswordOrEmail(CustomExceptions.WrongPasswordOrEmail ex) {
+        String message = messageSource.getMessage("bad.credential", new Object[]{ex.getMessage()}, LocaleContextHolder.getLocale());
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                .body(ApiResponse.error(message, HttpStatus.UNAUTHORIZED));
+
+    }
+    @ExceptionHandler(ExpiredJwtException.class)
+    public ResponseEntity<ApiResponse<Void>> handleExpiredJwtException(ExpiredJwtException ex) {
+        String message = messageSource.getMessage("bad.credential", new Object[]{ex.getMessage()}, LocaleContextHolder.getLocale());
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                .body(ApiResponse.error(message, HttpStatus.UNAUTHORIZED));
+
     }
 }
