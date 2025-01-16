@@ -1,4 +1,4 @@
-package com.cotede.e2eechatapp.common;
+package com.cotede.e2eechatapp.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

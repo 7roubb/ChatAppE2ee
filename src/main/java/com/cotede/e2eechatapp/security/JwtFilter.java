@@ -1,8 +1,6 @@
 package com.cotede.e2eechatapp.security;
 
 import com.cotede.e2eechatapp.response.ApiResponse;
-import com.cotede.e2eechatapp.exceptions.CustomExceptions;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.MalformedJwtException;
 import io.jsonwebtoken.UnsupportedJwtException;

@@ -1,9 +1,13 @@
 package com.cotede.e2eechatapp.response;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.http.HttpStatus;
+
+import java.io.IOException;
 
 @Getter
 @Setter
@@ -35,5 +39,12 @@ public class ApiResponse<T> {
                 .status(status)
                 .message(message)
                 .build();
+    }
+    public static void writeSecurityErrorResponse(HttpServletResponse response, String message, HttpStatus status) throws IOException {
+        response.setStatus(status.value());
+        response.setContentType("application/json");
+        ApiResponse<Void> apiResponse = ApiResponse.error(message, status);
+        ObjectMapper objectMapper = new ObjectMapper();
+        response.getWriter().write(objectMapper.writeValueAsString(apiResponse));
     }
 }
